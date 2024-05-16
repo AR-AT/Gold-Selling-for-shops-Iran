@@ -35,6 +35,8 @@ def calculate_gold_price():
         # Display results
         results_label.config(text='جمع کل ارزش افزوده: {:,}\nسود: {:,}\nمالیات: {:,}\nمبلغ قابل پرداخت: {:,}'.format(
             int(seller_profit_plus_Raw_price), int(seller_profit), int(tax), int(tax + seller_profit_plus_Raw_price)))
+        
+        return seller_profit_plus_Raw_price, seller_profit, tax
 
     # Add labels and entry widgets for input
     gold_price_label = tk.Label(root, text='\u200Fقیمت هر گرم طلا: ')
@@ -67,13 +69,12 @@ def calculate_gold_price():
 
     pdfmetrics.registerFont(TTFont('BNazanin.ttf', 'C:/Users/Amir/Documents/Shop/BNazanin.ttf'))
     
-    def generate_receipt(customer_name, customer_number, item_name, price):
-        
+    def generate_receipt(customer_name, customer_number, item_name, price, tax, total_payment):
         # Convert current date and time to Persian calendar
         persian_datetime = jdatetime.datetime.fromgregorian(datetime=datetime.now())
         persian_date = persian_datetime.strftime('%Y/%m/%d')
         persian_time = persian_datetime.strftime('%H:%M:%S')
-
+    
         # Create a PDF file
         c = canvas.Canvas(f"{customer_name}_receipt.pdf", pagesize=letter)
         c.setFont('BNazanin.ttf', 12)
@@ -81,11 +82,19 @@ def calculate_gold_price():
             reshaped_text = arabic_reshaper.reshape(text)  # Reshape the text
             bidi_text = get_display(reshaped_text)  # Apply BiDi algorithm
             return bidi_text
+    
+        # Format prices with thousands separators
+        formatted_price = '{:,.0f}'.format(price)
+        formatted_tax = '{:,.0f}'.format(tax)
+        formatted_total_payment = '{:,.0f}'.format(total_payment)
+    
         text_objects = {
             format_persian_text('نام مشتری'): format_persian_text(customer_name),
             format_persian_text('شماره مشتری'): customer_number,
             format_persian_text('نام کالا'): format_persian_text(item_name),
-            format_persian_text('قیمت'): format_persian_text(price),
+            format_persian_text('جمع کل ارزش افزوده'): format_persian_text(formatted_price),
+            format_persian_text('مالیات'): format_persian_text(formatted_tax),
+            format_persian_text('مبلغ قابل پرداخت'): format_persian_text(formatted_total_payment),
             format_persian_text('تاریخ'): persian_date,
             format_persian_text('زمان'): persian_time
         }
@@ -93,6 +102,7 @@ def calculate_gold_price():
             c.drawString(100, 750 - (i * 20), f"{key}: {text}")
     
         c.save()
+
 
     # Function to handle 'تایید' button click
     item_options = ['انگشتر', 'النگو', 'سرویس', 'نیم سرویس', 'گوشواره', 'دستبند']
@@ -103,25 +113,19 @@ def calculate_gold_price():
         customer_number = simpledialog.askstring("شماره مشتری", "لطفا شماره مشتری را وارد کنید:")
         selected_items = [item for item, var in zip(item_options, check_vars) if var.get()]
         
-  
-       
         # Ensure the item name is valid
         if not selected_items:
             messagebox.showerror("خطا", "لطفا حداقل یک کالا را انتخاب کنید.")
             return
             
         selected_items_str = ', '.join(selected_items)
-
         
-
-        for i, item in enumerate(item_options):
-            tk.Checkbutton(root, text=item, variable=check_vars[i]).grid(row=i+6, column=0, sticky='w')
-        
-        # Calculate the price (this should be replaced with actual price calculation)
-        price = calculate()  # Placeholder for actual price calculation function
+        # Calculate the price and other financial details
+        price, added_value, tax = calculate()
+        total_payment = price + tax
         
         # Generate the receipt PDF
-        generate_receipt(customer_name, customer_number, selected_items_str, price)
+        generate_receipt(customer_name, customer_number, selected_items_str, price, tax, total_payment)
 
     for i, item in enumerate(item_options):
         tk.Checkbutton(root, text=item, variable=check_vars[i]).grid(row=i+6, column=0, sticky='w')
