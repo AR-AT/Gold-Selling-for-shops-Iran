@@ -13,7 +13,7 @@ def calculate_gold_price():
     
     # Function to save records
     def save_record(panel, record):
-        records_texts[panel].insert(tk.END, record + "\n" + "="*40 + "\n\n")
+        records_texts[panel].insert(tk.END, record + "\n" + "="*60 + "\n\n")
         records_texts[panel].see(tk.END)
 
     # Function to calculate gold price for the first panel
