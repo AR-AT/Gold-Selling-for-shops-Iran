@@ -17,7 +17,7 @@ def calculate_gold_price():
         records_texts[panel].see(tk.END)
 
     # Function to calculate gold price for the first panel
-    def calculate_first(panel):
+    def calculate_first(event=None, panel=0):
         # Get input values
         gold_price_18k = float(gold_price_entries[panel].get())
         weight_grams = float(weight_entries[panel].get())
@@ -42,8 +42,8 @@ def calculate_gold_price():
         record = f"قیمت: {gold_price_18k}, وزن: {weight_grams}, اجرت: {selling_Ojrat_percent}, سود: {seller_profit_percent}, نتیجه: {result}"
         save_record(panel, record)
 
-    # Placeholder function for the second calculation
-    def calculate_second(panel):
+    # Function to calculate gold price for the second panel
+    def calculate_second(event=None, panel=1):
         # Get input values
         gold_price_18k = float(gold_price_entries[panel].get())
         weight_grams = float(weight_entries[panel].get())
@@ -60,8 +60,8 @@ def calculate_gold_price():
         record = f"قیمت: {gold_price_18k}, وزن: {weight_grams}, کاهش: {reduction_percent}, نتیجه: {result}"
         save_record(panel, record)
 
-    # Placeholder function for the third calculation
-    def calculate_third(panel):
+    # Function to calculate gold price for the third panel
+    def calculate_third(event=None, panel=2):
         # Get input values
         gold_price_18k = float(gold_price_entries[panel].get())
         weight_grams = float(weight_entries[panel].get())
@@ -132,8 +132,14 @@ def calculate_gold_price():
             seller_profit_percent_entry.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
             seller_profit_percent_entries[i] = seller_profit_percent_entry
 
+            # Bind the Enter key to trigger calculation for the first panel
+            gold_price_entry.bind('<Return>', lambda event, panel=i: calculate_first(panel=panel))
+            weight_entry.bind('<Return>', lambda event, panel=i: calculate_first(panel=panel))
+            selling_Ojrat_percent_entry.bind('<Return>', lambda event, panel=i: calculate_first(panel=panel))
+            seller_profit_percent_entry.bind('<Return>', lambda event, panel=i: calculate_first(panel=panel))
+
             # Add a button to trigger calculation for the first panel
-            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_first(panel))
+            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_first(panel=panel))
         
         elif i == 1:
             reduction_percent_label = tk.Label(panels[i], text='\u200Fدرصد کاهش: ')
@@ -142,8 +148,13 @@ def calculate_gold_price():
             reduction_percent_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
             reduction_percent_entries[i] = reduction_percent_entry
 
+            # Bind the Enter key to trigger calculation for the second panel
+            gold_price_entry.bind('<Return>', lambda event, panel=i: calculate_second(panel=panel))
+            weight_entry.bind('<Return>', lambda event, panel=i: calculate_second(panel=panel))
+            reduction_percent_entry.bind('<Return>', lambda event, panel=i: calculate_second(panel=panel))
+
             # Add a button to trigger calculation for the second panel
-            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_second(panel))
+            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_second(panel=panel))
         
         elif i == 2:
             profit_percent_label = tk.Label(panels[i], text='\u200Fدرصد سود: ')
@@ -152,8 +163,13 @@ def calculate_gold_price():
             profit_percent_entry.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
             profit_percent_entries[i] = profit_percent_entry
 
+            # Bind the Enter key to trigger calculation for the third panel
+            gold_price_entry.bind('<Return>', lambda event, panel=i: calculate_third(panel=panel))
+            weight_entry.bind('<Return>', lambda event, panel=i: calculate_third(panel=panel))
+            profit_percent_entry.bind('<Return>', lambda event, panel=i: calculate_third(panel=panel))
+
             # Add a button to trigger calculation for the third panel
-            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_third(panel))
+            calculate_button = tk.Button(panels[i], text="محاسبه", command=lambda panel=i: calculate_third(panel=panel))
 
         calculate_button.grid(row=4, column=0, columnspan=2, pady=10)
 
